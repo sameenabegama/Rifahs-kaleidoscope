@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rifahs Kaleidoscope - Address Label Generator</title>
 <style>
   * { box-sizing: border-box; }
@@ -31,16 +32,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
   }
   .login-card {
     background: #FFFDF9;
     border-radius: 16px;
     padding: 36px 34px;
     width: 320px;
+    max-width: 90vw;
     box-shadow: 0 10px 32px rgba(107,68,35,0.18);
     border: 1px solid #EBDCC0;
     animation: popIn .45s ease both;
     text-align: center;
+  }
+  @media (max-width: 400px) {
+    .login-card { padding: 28px 22px; }
   }
   .login-card .logo-badge {
     width: 56px;
@@ -94,6 +101,9 @@
     color: #3B2A1A;
     min-height: 100vh;
   }
+  @media (max-width: 640px) {
+    body { padding: 18px 14px; }
+  }
 
   .heading {
     max-width: 1180px;
@@ -112,6 +122,10 @@
     font-size: 13.5px;
     color: #8A6A47;
   }
+  @media (max-width: 640px) {
+    .heading h1 { font-size: 18px; }
+    .heading p { font-size: 12.5px; }
+  }
 
   .wrap {
     max-width: 1180px;
@@ -120,6 +134,11 @@
     grid-template-columns: 320px 1fr;
     gap: 24px;
     align-items: start;
+  }
+  @media (max-width: 900px) {
+    .wrap {
+      grid-template-columns: 1fr;
+    }
   }
 
   .panel {
@@ -132,6 +151,9 @@
     animation: fadeUp .55s ease both;
     animation-delay: .05s;
     transition: box-shadow .3s ease;
+  }
+  @media (max-width: 640px) {
+    .panel { padding: 18px; border-radius: 12px; }
   }
   .panel:hover {
     box-shadow: 0 6px 24px rgba(107,68,35,0.16);
@@ -188,6 +210,9 @@
     min-height: 82px;
     line-height: 1.45;
   }
+  @media (max-width: 640px) {
+    input, textarea { font-size: 16px; }
+  }
 
   button {
     margin-top: 22px;
@@ -237,9 +262,13 @@
     animation-delay: .1s;
     overflow: hidden;
   }
+  @media (max-width: 640px) {
+    .page-outer { padding: 14px; border-radius: 12px; }
+  }
   .page-scale-box {
-    width: 720px;
-    height: 509.4px;
+    width: 100%;
+    max-width: 720px;
+    aspect-ratio: 11.7 / 8.271;
     overflow: hidden;
     position: relative;
   }
@@ -248,7 +277,9 @@
     height: 8.271in;
     background: #fff;
     box-shadow: 0 10px 30px rgba(107,68,35,0.28);
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
     font-family: 'Tahoma', Arial, sans-serif;
     color: #000;
     transform: scale(0.641);
@@ -311,15 +342,22 @@
       background: #fff;
       border-radius: 0;
       display: block;
+      overflow: visible;
     }
     .page-scale-box {
       width: auto;
       height: auto;
+      max-width: none;
+      aspect-ratio: auto;
       overflow: visible;
+      position: static;
     }
     #page {
+      position: relative;
+      top: auto;
+      left: auto;
       box-shadow: none;
-      transform: none;
+      transform: none !important;
     }
     @page { size: 11.7in 8.271in; margin: 0; }
   }
@@ -417,6 +455,7 @@ Pune -57</textarea>
       app.style.display = 'block';
       app.style.animation = 'fadeUp .4s ease both';
       try { sessionStorage.setItem('rk_authed', '1'); } catch (e) {}
+      setTimeout(function(){ if (typeof fitPageScale === 'function') fitPageScale(); }, 50);
     } else {
       errorEl.classList.remove('show');
       void errorEl.offsetWidth;
@@ -435,6 +474,7 @@ Pune -57</textarea>
     if (sessionStorage.getItem('rk_authed') === '1') {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('appContent').style.display = 'block';
+      setTimeout(function(){ if (typeof fitPageScale === 'function') fitPageScale(); }, 50);
     }
   } catch (e) {}
 
@@ -476,6 +516,27 @@ Pune -57</textarea>
   });
 
   render();
+
+  // Dynamically scale the page preview to fit its container on any device.
+  var TRUE_PAGE_WIDTH_PX = 11.7 * 96; // #page width in CSS px at 96dpi
+  function fitPageScale() {
+    var box = document.querySelector('.page-scale-box');
+    var pg = document.getElementById('page');
+    if (!box || !pg) return;
+    var containerWidth = box.getBoundingClientRect().width;
+    if (containerWidth > 0) {
+      var scale = containerWidth / TRUE_PAGE_WIDTH_PX;
+      pg.style.transform = 'scale(' + scale + ')';
+    }
+  }
+  window.addEventListener('resize', fitPageScale);
+  window.addEventListener('orientationchange', fitPageScale);
+  if (window.ResizeObserver) {
+    var pageBoxEl = document.querySelector('.page-scale-box');
+    if (pageBoxEl) new ResizeObserver(fitPageScale).observe(pageBoxEl);
+  }
+  fitPageScale();
+  window.addEventListener('load', fitPageScale);
 </script>
 
 </body>
