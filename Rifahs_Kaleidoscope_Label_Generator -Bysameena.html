@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Rifahs Kaleidoscope - Address Label Generator</title>
+<style>
+  * { box-sizing: border-box; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes softPulse {
+    0% { box-shadow: 0 0 0 0 rgba(184,134,11,0.35); }
+    70% { box-shadow: 0 0 0 8px rgba(184,134,11,0); }
+    100% { box-shadow: 0 0 0 0 rgba(184,134,11,0); }
+  }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(160deg, #F7EFE1 0%, #F1E4CC 100%);
+    margin: 0;
+    padding: 32px 24px;
+    color: #3B2A1A;
+    min-height: 100vh;
+  }
+
+  .heading {
+    max-width: 1180px;
+    margin: 0 auto 20px;
+    animation: fadeUp .5s ease both;
+  }
+  .heading h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: #6B4423;
+    letter-spacing: .2px;
+  }
+  .heading p {
+    margin: 0;
+    font-size: 13.5px;
+    color: #8A6A47;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .panel {
+    background: #FFFDF9;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 4px 18px rgba(107,68,35,0.12);
+    height: fit-content;
+    border: 1px solid #EBDCC0;
+    animation: fadeUp .55s ease both;
+    animation-delay: .05s;
+    transition: box-shadow .3s ease;
+  }
+  .panel:hover {
+    box-shadow: 0 6px 24px rgba(107,68,35,0.16);
+  }
+  .panel h2 {
+    margin: 0 0 2px;
+    font-size: 17px;
+    color: #6B4423;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel h2 .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #C9962F;
+    display: inline-block;
+    animation: softPulse 2.2s infinite;
+  }
+  .panel .sub {
+    font-size: 12px;
+    color: #A98A63;
+    margin: 0 0 6px;
+  }
+
+  label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    margin: 16px 0 5px;
+    color: #6B4423;
+    letter-spacing: .1px;
+  }
+  input, textarea {
+    width: 100%;
+    padding: 9px 11px;
+    font-size: 14px;
+    border: 1.5px solid #E4D3AF;
+    border-radius: 8px;
+    font-family: inherit;
+    background: #FFFCF6;
+    color: #3B2A1A;
+    transition: border-color .2s ease, box-shadow .2s ease, transform .15s ease;
+  }
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: #C9962F;
+    box-shadow: 0 0 0 3px rgba(201,150,47,0.18);
+    transform: translateY(-1px);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 82px;
+    line-height: 1.45;
+  }
+
+  button {
+    margin-top: 22px;
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #A9702E, #8B5E3C);
+    color: #FFF8EC;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: .2px;
+    transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+    box-shadow: 0 3px 10px rgba(139,94,60,0.35);
+  }
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(139,94,60,0.45);
+    filter: brightness(1.05);
+  }
+  button:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 6px rgba(139,94,60,0.35);
+  }
+  .hint {
+    font-size: 11.5px;
+    color: #A98A63;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  /* --- Page / label preview ---
+     True page size: 11.7in x 8.271in (matches the original document exactly).
+     #page is built at true physical size in inches/points, then scaled down
+     ONLY for on-screen viewing via transform. Print media removes the scale,
+     so what gets saved as PDF is the exact real size - same font, same
+     margins, same spacing as the original. */
+  .page-outer {
+    background: linear-gradient(160deg, #EADFC6, #E3D5B4);
+    border-radius: 14px;
+    padding: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    animation: fadeUp .6s ease both;
+    animation-delay: .1s;
+    overflow: hidden;
+  }
+  .page-scale-box {
+    width: 720px;
+    height: 509.4px;
+    overflow: hidden;
+    position: relative;
+  }
+  #page {
+    width: 11.7in;
+    height: 8.271in;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(107,68,35,0.28);
+    position: relative;
+    font-family: 'Tahoma', Arial, sans-serif;
+    color: #000;
+    transform: scale(0.641);
+    transform-origin: top left;
+    transition: box-shadow .3s ease;
+  }
+  .page-scale-box:hover #page {
+    box-shadow: 0 14px 36px rgba(107,68,35,0.34);
+  }
+
+  .to-block {
+    position: absolute;
+    top: 0.93in;
+    right: 0.59in;
+    text-align: right;
+    max-width: 4.6in;
+  }
+  .to-block .to-label,
+  .to-block .to-name,
+  .to-block .to-addr-line,
+  .to-block .to-phone {
+    font-weight: 700;
+    font-size: 15.5pt;
+    margin: 0.05in 0;
+    line-height: 1.3;
+    word-wrap: break-word;
+  }
+  .to-block .to-phone .lbl {
+    font-family: 'Tahoma', Arial, sans-serif;
+  }
+  .to-block .to-phone .num {
+    font-family: Verdana, Arial, sans-serif;
+    color: #3973B6;
+    text-decoration: underline;
+  }
+
+  .from-block {
+    position: absolute;
+    left: 0.885in;
+    bottom: 2.05in;
+    font-weight: 700;
+    font-size: 15.5pt;
+    line-height: 2;
+  }
+
+  .logo {
+    position: absolute;
+    right: 0.6in;
+    bottom: 0.45in;
+    width: 3.6in;
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; margin: 0; }
+    .heading, .panel { display: none; }
+    .wrap { display: block; }
+    .page-outer {
+      padding: 0;
+      background: #fff;
+      border-radius: 0;
+      display: block;
+    }
+    .page-scale-box {
+      width: auto;
+      height: auto;
+      overflow: visible;
+    }
+    #page {
+      box-shadow: none;
+      transform: none;
+    }
+    @page { size: 11.7in 8.271in; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="heading">
+  <h1>Rifahs Kaleidoscope — address label maker</h1>
+  <p>Fill in the recipient's details on the left, the label updates instantly on the right.</p>
+</div>
+
+<div class="wrap">
+  <div class="panel">
+    <h2><span class="dot"></span>To address</h2>
+    <p class="sub">Only this side changes — the sender details stay fixed.</p>
+
+    <label for="name">Name</label>
+    <input id="name" type="text" value="Nishtha Javeri">
+
+    <label for="addr">Address (one line per row)</label>
+    <textarea id="addr">B-104, apostrophe
+Datta Mandir Road
+Wakad
+Pune -57</textarea>
+
+    <label for="phoneLabel">Phone label</label>
+    <input id="phoneLabel" type="text" value="Mob :">
+
+    <label for="phone">Phone number</label>
+    <input id="phone" type="text" value="9923974060">
+
+    <button onclick="downloadPdf()">Download as PDF</button>
+    <p class="hint">Click the button, then choose "Save as PDF" as the printer/destination in the dialog that opens. In the print dialog, set margins to "None" and paper size to A4 for an exact match.</p>
+  </div>
+
+  <div class="page-outer">
+    <div class="page-scale-box">
+      <div id="page">
+        <div class="to-block">
+          <div class="to-label">To,</div>
+          <div class="to-name" id="outName">Nishtha Javeri,</div>
+          <div id="outAddr"></div>
+          <div class="to-phone" id="outPhone"><span class="lbl">Mob :</span> <span class="num">9923974060</span></div>
+        </div>
+
+        <div class="from-block">
+          From,<br>
+          Rifahs kaleidoscope<br>
+          ARTS Garden, H.No.: 21,<br>
+          2nd Street (or) EM Balasubramaniam Street,<br>
+          Thirunagar Colony,<br>
+          Erode - 638 003<br>
+          Ph no 8838719765
+        </div>
+
+        <img class="logo" src="data:image/jpeg;base64,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" alt="Kaleidoscope by Rifah logo">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function render() {
+    var name = document.getElementById('name').value.trim();
+    var addrLines = document.getElementById('addr').value.split('\n').map(function(l){return l.trim();}).filter(Boolean);
+    var phoneLabel = document.getElementById('phoneLabel').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+
+    document.getElementById('outName').textContent = name + ',';
+
+    var addrHtml = addrLines.map(function(line){
+      return '<div class="to-addr-line">' + escapeHtml(line) + '</div>';
+    }).join('');
+    document.getElementById('outAddr').innerHTML = addrHtml;
+
+    document.getElementById('outPhone').innerHTML =
+      '<span class="lbl">' + escapeHtml(phoneLabel) + '</span> <span class="num">' + escapeHtml(phone) + '</span>';
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function downloadPdf() {
+    var name = document.getElementById('name').value.trim();
+    var originalTitle = document.title;
+    document.title = 'Rifahs kaleidoscope-' + (name || 'Address Label');
+    window.print();
+    setTimeout(function() {
+      document.title = originalTitle;
+    }, 1000);
+  }
+
+  ['name','addr','phoneLabel','phone'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', render);
+  });
+
+  render();
+</script>
+
+</body>
+</html>
